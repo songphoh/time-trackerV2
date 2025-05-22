@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ตั้งค่าระบบ - ระบบลงเวลาออนไลน์</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Google Font: Sarabun -->
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/admin-style.css">
+  
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+    }
+    .settings-card {
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+    .settings-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    .settings-icon {
+      font-size: 28px;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+    }
+    .form-switch .form-check-input {
+      width: 3em;
+      height: 1.5em;
+    }
+    .telegram-group-item {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .group-delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+    <!-- ส่วนหัว -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="/admin/dashboard.html">
+          <i class="fas fa-clock me-2"></i> ระบบลงเวลาออนไลน์
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="/admin/dashboard.html">
+                <i class="fas fa-tachometer-alt me-1"></i> แดชบอร์ด
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/time-logs.html">
+                <i class="fas fa-clipboard-list me-1"></i> ประวัติการลงเวลา
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/employees.html">
+                <i class="fas fa-users me-1"></i> จัดการพนักงาน
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/time-edit.html">
+                <i class="fas fa-edit me-1"></i> แก้ไขการลงเวลา
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/settings.html">
+                <i class="fas fa-cogs me-1"></i> ตั้งค่าระบบ
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/data-cleanup.html">
+                <i class="fas fa-broom me-1"></i> จัดการข้อมูล
+              </a>
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="logout-btn">
+                <i class="fas fa-sign-out-alt me-1"></i> ออกจากระบบ
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- เนื้อหาหลัก -->
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>
+        <i class="fas fa-cogs text-primary me-2"></i> ตั้งค่าระบบ
+      </h2>
+      <button id="save-all-btn" class="btn btn-success">
+        <i class="fas fa-save me-1"></i> บันทึกการตั้งค่าทั้งหมด
+      </button>
+    </div>
+    
+    <div class="row">
+
+    <!-- ตั้งค่าองค์กร -->
+    <div class="col-lg-6 col-md-12">
+        <div class="card settings-card">
+          <div class="card-header bg-white">
+            <div class="d-flex align-items-center">
+              <div class="settings-icon bg-primary bg-opacity-10 text-primary me-3">
+                <i class="fas fa-building"></i>
+              </div>
+              <h5 class="mb-0">ตั้งค่าองค์กร</h5>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="organization_name" class="form-label">ชื่อหน่วยงาน</label>
+              <input type="text" class="form-control" id="organization_name" name="organization_name">
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="work_start_time" class="form-label">เวลาเริ่มงาน</label>
+                <input type="time" class="form-control" id="work_start_time" name="work_start_time">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="work_end_time" class="form-label">เวลาเลิกงาน</label>
+                <input type="time" class="form-control" id="work_end_time" name="work_end_time">
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="allowed_ip" class="form-label">IP Address ที่อนุญาต</label>
+              <input type="text" class="form-control" id="allowed_ip" name="allowed_ip" placeholder="เช่น 192.168.1.1, 10.0.0.1">
+              <div class="form-text">ว่างหากอนุญาตทุก IP (คั่นด้วยเครื่องหมายจุลภาค ,)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-md-12">
+        <div class="mb-3">
+          <label for="time_offset" class="form-label">ค่าชดเชยเวลา (นาที)</label>
+          <div class="input-group">
+            <input type="number" class="form-control" id="time_offset" name="time_offset" value="0">
+            <span class="input-group-text">นาที</span>
+          </div>
+          <div class="form-text">กำหนดค่าชดเชยเวลา: 0 = เวลาปกติ, เป็นบวก = เร็วกว่าความเป็นจริง, เป็นลบ = ช้ากว่าความเป็นจริง</div>
+        </div>
+      </div>
+
+      <!-- ตั้งค่า Google Apps Script -->
+      <div class="col-lg-6 col-md-12">
+        <div class="card settings-card">
+          <div class="card-header bg-white">
+            <div class="d-flex align-items-center">
+              <div class="settings-icon bg-success bg-opacity-10 text-success me-3">
+                <i class="fas fa-cloud"></i>
+              </div>
+              <h5 class="mb-0">ตั้งค่า Google Apps Script</h5>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="gas_web_app_url" class="form-label">Google Apps Script URL</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="gas_web_app_url" name="gas_web_app_url">
+                <button class="btn btn-outline-success" type="button" id="test-gas-btn">ทดสอบ</button>
+              </div>
+              <div class="form-text">URL ที่ได้จากการ Deploy เป็น Web App (รูปแบบ: https://script.google.com/macros/s/XXXX/exec)</div>
+            </div>
+            
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="use_gas_for_telegram" name="use_gas_for_telegram" value="1" checked>
+                <label class="form-check-label" for="use_gas_for_telegram">ใช้ Google Apps Script ในการสร้างแผนที่และส่งข้อความไป Telegram</label>
+              </div>
+              <div class="form-text">เมื่อเปิดใช้งาน ระบบจะส่งข้อมูลไปยัง Google Apps Script เพื่อสร้างแผนที่และส่งข้อความไป Telegram แทนการส่งโดยตรง</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ตั้งค่า Telegram -->
+      <div class="col-lg-6 col-md-12">
+        <div class="card settings-card">
+          <div class="card-header bg-white">
+            <div class="d-flex align-items-center">
+              <div class="settings-icon bg-info bg-opacity-10 text-info me-3">
+                <i class="fab fa-telegram"></i>
+              </div>
+              <h5 class="mb-0">ตั้งค่า Telegram</h5>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="telegram_bot_token" class="form-label">Telegram Bot Token</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="telegram_bot_token" name="telegram_bot_token">
+                <button class="btn btn-outline-info" type="button" id="test-notify-btn">ทดสอบ</button>
+              </div>
+              <div class="form-text">สร้างได้ที่ <a href="https://t.me/BotFather" target="_blank">Telegram BotFather</a></div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">กลุ่ม Telegram สำหรับแจ้งเตือน</label>
+              <div id="telegram-groups-container">
+                <!-- กลุ่ม Telegram จะถูกเพิ่มที่นี่ด้วย JavaScript -->
+              </div>
+              <button class="btn btn-outline-primary btn-sm mt-2" id="add-group-btn" type="button">
+                <i class="fas fa-plus-circle me-1"></i> เพิ่มกลุ่ม
+              </button>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label d-block">การแจ้งเตือน</label>
+              <div class="form-check form-switch form-check-inline">
+                <input class="form-check-input" type="checkbox" id="notify_clock_in" name="notify_clock_in" value="1">
+                <label class="form-check-label" for="notify_clock_in">ลงเวลาเข้า</label>
+              </div>
+              <div class="form-check form-switch form-check-inline ms-3">
+                <input class="form-check-input" type="checkbox" id="notify_clock_out" name="notify_clock_out" value="1">
+                <label class="form-check-label" for="notify_clock_out">ลงเวลาออก</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ตั้งค่าความปลอดภัย -->
+      <div class="col-lg-6 col-md-12">
+        <div class="card settings-card">
+          <div class="card-header bg-white">
+            <div class="d-flex align-items-center">
+              <div class="settings-icon bg-danger bg-opacity-10 text-danger me-3">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <h5 class="mb-0">ตั้งค่าความปลอดภัย</h5>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="admin_username" class="form-label">ชื่อผู้ใช้ผู้ดูแลระบบ</label>
+              <input type="text" class="form-control" id="admin_username" name="admin_username">
+            </div>
+            
+            <div class="mb-3">
+              <label for="admin_password" class="form-label">รหัสผ่านผู้ดูแลระบบ</label>
+              <input type="password" class="form-control" id="admin_password" name="admin_password">
+              <div class="form-text">เว้นว่างหากไม่ต้องการเปลี่ยนรหัสผ่าน</div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="confirm_password" class="form-label">ยืนยันรหัสผ่าน</label>
+              <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+            </div>
+            
+            <div class="mb-3">
+              <label for="liff_id" class="form-label">LINE LIFF ID</label>
+              <input type="text" class="form-control" id="liff_id" name="liff_id">
+              <div class="form-text">รหัส LIFF ID สำหรับการลงเวลา</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- สถานะระบบ -->
+      <div class="col-lg-6 col-md-12">
+        <div class="card settings-card">
+          <div class="card-header bg-white">
+            <div class="d-flex align-items-center">
+              <div class="settings-icon bg-info bg-opacity-10 text-info me-3">
+                <i class="fas fa-info-circle"></i>
+              </div>
+              <h5 class="mb-0">สถานะระบบ</h5>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="mb-3 border-bottom pb-3">
+              <div class="d-flex justify-content-between">
+                <span>เวอร์ชัน:</span>
+                <span class="badge bg-primary">1.0.0</span>
+              </div>
+            </div>
+            <div class="mb-3 border-bottom pb-3">
+              <div class="d-flex justify-content-between">
+                <span>วันที่เริ่มใช้งาน:</span>
+                <span id="installDate" class="fw-bold">-</span>
+              </div>
+            </div>
+            <div class="mb-3 border-bottom pb-3">
+              <div class="d-flex justify-content-between">
+                <span>จำนวนพนักงาน:</span>
+                <span id="employeeCount" class="badge bg-success rounded-pill fs-6">-</span>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between">
+                <span>จำนวนบันทึกเวลา:</span>
+                <span id="logCount" class="badge bg-info rounded-pill fs-6">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ฟุตเตอร์ -->
+  <footer class="bg-light py-3 mt-5 border-top">
+    <div class="container text-center text-muted small">
+      &copy; <span id="currentYear"></span> ระบบลงเวลาออนไลน์ | พัฒนาโดย ผู้ช่วยเจ้าพนักงานธุรการ สำนักปลัด
+    </div>
+  </footer>
+  
+  <!-- Modal แบบฟอร์มกลุ่ม Telegram -->
+  <div class="modal fade" id="telegramGroupModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="groupModalTitle">เพิ่มกลุ่ม Telegram</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="group_index" value="-1">
+          <div class="mb-3">
+            <label for="group_name" class="form-label">ชื่อกลุ่ม</label>
+            <input type="text" class="form-control" id="group_name" placeholder="เช่น กลุ่มหลัก, กลุ่มผู้บริหาร">
+          </div>
+          <div class="mb-3">
+            <label for="group_chat_id" class="form-label">Chat ID</label>
+            <input type="text" class="form-control" id="group_chat_id" placeholder="เช่น -123456789">
+            <div class="form-text">ใช้ Bot <a href="https://t.me/username_to_id_bot" target="_blank">@username_to_id_bot</a> เพื่อรับ Chat ID</div>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="group_active" checked>
+            <label class="form-check-label" for="group_active">เปิดใช้งาน</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-primary" id="save-group-btn">บันทึก</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal ทดสอบการแจ้งเตือน Telegram -->
+  <div class="modal fade" id="testNotifyModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">ทดสอบการแจ้งเตือน Telegram</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="test_notify_group" class="form-label">กลุ่มที่ต้องการทดสอบ</label>
+            <select class="form-select" id="test_notify_group">
+              <!-- กลุ่มจะถูกเพิ่มด้วย JavaScript -->
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="test_notify_message" class="form-label">ข้อความทดสอบ</label>
+            <textarea class="form-control" id="test_notify_message" rows="3">ทดสอบการแจ้งเตือนจากระบบลงเวลาออนไลน์</textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-info" id="send-test-notify-btn">ส่งข้อความ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal ทดสอบการส่งข้อความผ่าน Google Apps Script -->
+  <div class="modal fade" id="testGasModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">ทดสอบการส่งข้อความผ่าน Google Apps Script</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="test_gas_group" class="form-label">กลุ่มที่ต้องการทดสอบ</label>
+            <select class="form-select" id="test_gas_group">
+              <!-- กลุ่มจะถูกเพิ่มด้วย JavaScript -->
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="test_gas_message" class="form-label">ข้อความทดสอบ</label>
+            <textarea class="form-control" id="test_gas_message" rows="3">ทดสอบการส่งข้อความผ่าน Google Apps Script</textarea>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="test_gas_with_location" checked>
+            <label class="form-check-label" for="test_gas_with_location">
+              ทดสอบพร้อมแผนที่ (ใช้พิกัดกรุงเทพฯ)
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-success" id="send-test-gas-btn">ส่งข้อความ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal แจ้งผลลัพธ์ -->
+  <div class="modal fade" id="resultModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="resultModalTitle">แจ้งผล</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="resultModalBody"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">ตกลง</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom JS -->
+  <script>
+    $(document).ready(function() {
+      // ตรวจสอบการล็อกอิน
+      if (!sessionStorage.getItem('admin_logged_in')) {
+        window.location.href = '/admin/index.html';
+        return;
+      }
+      
+      // ตั้งค่าปีปัจจุบัน
+      $('#currentYear').text(new Date().getFullYear());
+      
+      // โหลดการตั้งค่าทั้งหมด
+      loadSettings();
+      
+      // โหลดสถานะระบบ
+      loadSystemStatus();
+
+      // เมื่อคลิกปุ่มเพิ่มกลุ่ม
+      $('#add-group-btn').on('click', function() {
+        // รีเซ็ตฟอร์ม
+        $('#group_index').val('-1');
+        $('#group_name').val('');
+        $('#group_chat_id').val('');
+        $('#group_active').prop('checked', true);
+        $('#groupModalTitle').text('เพิ่มกลุ่ม Telegram');
+        
+        // เปิด Modal
+        const modal = new bootstrap.Modal(document.getElementById('telegramGroupModal'));
+        modal.show();
+      });
+      
+      // เมื่อคลิกปุ่มบันทึกกลุ่ม
+      $('#save-group-btn').on('click', function() {
+        const index = $('#group_index').val();
+        const name = $('#group_name').val();
+        const chatId = $('#group_chat_id').val();
+        const active = $('#group_active').is(':checked');
+        
+        if (!name || !chatId) {
+          showResult('ข้อผิดพลาด', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'danger');
+          return;
+        }
+        
+        // ปิด Modal
+        $('#telegramGroupModal').modal('hide');
+        
+        // ดึงข้อมูลกลุ่มปัจจุบัน
+        let groups = [];
+        try {
+          groups = JSON.parse($('#telegram_groups').val() || '[]');
+        } catch (e) {
+          groups = [];
+        }
+        
+        if (index === '-1') {
+          // เพิ่มกลุ่มใหม่
+          groups.push({
+            name: name,
+            chat_id: chatId,
+            active: active
+          });
+        } else {
+          // แก้ไขกลุ่มเดิม
+          groups[parseInt(index)] = {
+            name: name,
+            chat_id: chatId,
+            active: active
+          };
+        }
+        
+        // อัปเดต input hidden
+        $('#telegram_groups').val(JSON.stringify(groups));
+        
+        // แสดงรายการกลุ่มใหม่
+        renderTelegramGroups(groups);
+        
+        showResult('สำเร็จ', 'บันทึกข้อมูลกลุ่มเรียบร้อยแล้ว', 'success');
+      });
+      
+      // เมื่อคลิกปุ่มทดสอบการแจ้งเตือน Telegram
+      $('#test-notify-btn').on('click', function() {
+        const token = $('#telegram_bot_token').val();
+        if (!token) {
+          showResult('ข้อผิดพลาด', 'กรุณากรอก Telegram Bot Token ก่อนทดสอบ', 'danger');
+          return;
+        }
+        
+        // อัปเดตรายการกลุ่มใน dropdown
+        updateTestGroupDropdown();
+        
+        const testModal = new bootstrap.Modal(document.getElementById('testNotifyModal'));
+        testModal.show();
+      });
+      
+      // เมื่อคลิกปุ่มส่งข้อความทดสอบ Telegram
+      $('#send-test-notify-btn').on('click', function() {
+        const token = $('#telegram_bot_token').val();
+        const chatId = $('#test_notify_group').val();
+        const message = $('#test_notify_message').val();
+        
+        if (!chatId) {
+          showResult('ข้อผิดพลาด', 'กรุณาเลือกกลุ่มที่ต้องการทดสอบ', 'danger');
+          return;
+        }
+        
+        if (!message) {
+          showResult('ข้อผิดพลาด', 'กรุณากรอกข้อความทดสอบ', 'danger');
+          return;
+        }
+        
+        // ปิด Modal ทดสอบ
+        $('#testNotifyModal').modal('hide');
+        
+        // ส่งข้อความทดสอบ
+        $.ajax({
+          url: '/api/sendnotify',
+          type: 'POST',
+          data: JSON.stringify({
+            token: token,
+            chat_id: chatId,
+            message: message
+          }),
+          contentType: 'application/json',
+          success: function(response) {
+            if (response.success) {
+              showResult('สำเร็จ', 'ส่งข้อความทดสอบเรียบร้อยแล้ว กรุณาตรวจสอบที่กลุ่ม Telegram', 'success');
+            } else {
+              showResult('ข้อผิดพลาด', 'ไม่สามารถส่งข้อความได้: ' + (response.error || 'โปรดตรวจสอบ Token และ Chat ID'), 'danger');
+            }
+          },
+          error: function() {
+            showResult('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'danger');
+          }
+        });
+      });
+      
+      // เมื่อคลิกปุ่มทดสอบ Google Apps Script
+      $('#test-gas-btn').on('click', function() {
+        const gasUrl = $('#gas_web_app_url').val();
+        if (!gasUrl) {
+          showResult('ข้อผิดพลาด', 'กรุณากรอก Google Apps Script URL ก่อนทดสอบ', 'danger');
+          return;
+        }
+        
+        // อัปเดตรายการกลุ่มใน dropdown
+        updateTestGasGroupDropdown();
+        
+        const testModal = new bootstrap.Modal(document.getElementById('testGasModal'));
+        testModal.show();
+      });
+      
+      // เมื่อคลิกปุ่มส่งข้อความทดสอบผ่าน Google Apps Script
+      $('#send-test-gas-btn').on('click', function() {
+        const gasUrl = $('#gas_web_app_url').val();
+        const token = $('#telegram_bot_token').val();
+        const chatId = $('#test_gas_group').val();
+        const message = $('#test_gas_message').val();
+        const withLocation = $('#test_gas_with_location').is(':checked');
+        
+        if (!gasUrl) {
+          showResult('ข้อผิดพลาด', 'กรุณากรอก Google Apps Script URL', 'danger');
+          return;
+        }
+        
+        if (!chatId) {
+          showResult('ข้อผิดพลาด', 'กรุณาเลือกกลุ่มที่ต้องการทดสอบ', 'danger');
+          return;
+        }
+        
+        if (!message) {
+          showResult('ข้อผิดพลาด', 'กรุณากรอกข้อความทดสอบ', 'danger');
+          return;
+        }
+        
+        // ปิด Modal ทดสอบ
+        $('#testGasModal').modal('hide');
+        
+        // เตรียมข้อมูลสำหรับทดสอบ
+        const testData = {
+          message: message,
+          token: token,
+          chatId: chatId,
+          gasUrl: gasUrl // เพิ่ม URL เข้าไปในข้อมูลที่ส่ง
+        };
+        
+        // เพิ่มพิกัดถ้าเลือกทดสอบพร้อมแผนที่
+        if (withLocation) {
+          testData.lat = "13.7563"; // พิกัดกรุงเทพฯ
+          testData.lon = "100.5018"; // พิกัดกรุงเทพฯ
+        }
+        
+        // แสดงข้อความกำลังทดสอบ
+        $('#resultModalTitle').text('กำลังทดสอบ');
+        $('#resultModalBody').html('<div class="alert alert-info">กำลังส่งข้อความทดสอบ กรุณารอสักครู่...</div>');
+        const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+        resultModal.show();
+        
+        // ส่งข้อความทดสอบผ่าน API
+        $.ajax({
+          url: '/api/admin/test-gas',
+          type: 'POST',
+          data: JSON.stringify(testData),
+          contentType: 'application/json',
+          success: function(response) {
+            resultModal.hide();
+            if (response.success) {
+              showResult('สำเร็จ', 'ส่งข้อความทดสอบเรียบร้อยแล้ว กรุณาตรวจสอบที่กลุ่ม Telegram', 'success');
+            } else {
+              showResult('ข้อผิดพลาด', 'ไม่สามารถส่งข้อความได้: ' + (response.message || 'โปรดตรวจสอบ URL, Token และ Chat ID'), 'danger');
+            }
+          },
+          error: function() {
+            resultModal.hide();
+            showResult('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'danger');
+          }
+        });
+      });
+      
+      // เมื่อคลิกปุ่มบันทึกการตั้งค่าทั้งหมด
+      $('#save-all-btn').on('click', function() {
+        saveAllSettings();
+      });
+      
+      // ออกจากระบบ
+      $('#logout-btn').on('click', function(e) {
+        e.preventDefault();
+        sessionStorage.removeItem('admin_logged_in');
+        window.location.href = '/admin/index.html';
+      });
+      
+      // ฟังก์ชันโหลดการตั้งค่า
+      function loadSettings() {
+        $.ajax({
+          url: '/api/admin/settings',
+          type: 'GET',
+          success: function(response) {
+            if (response.success) {
+              // แปลงข้อมูลเป็นรูปแบบ key-value
+              const settings = {};
+              response.settings.forEach(setting => {
+                settings[setting.setting_name] = setting.setting_value;
+              });
+              
+              // กำหนดค่าให้กับฟอร์ม
+              $('#organization_name').val(settings.organization_name || '');
+              $('#work_start_time').val(settings.work_start_time || '08:30');
+              $('#work_end_time').val(settings.work_end_time || '16:30');
+              $('#allowed_ip').val(settings.allowed_ip || '');
+              $('#time_offset').val(settings.time_offset || '420');
+              
+              $('#telegram_bot_token').val(settings.telegram_bot_token || '');
+              $('#liff_id').val(settings.liff_id || '');
+              
+              // กำหนดค่า Google Apps Script
+              $('#gas_web_app_url').val(settings.gas_web_app_url || '');
+              $('#use_gas_for_telegram').prop('checked', settings.use_gas_for_telegram !== '0');
+              
+              // สร้าง input hidden สำหรับเก็บข้อมูลกลุ่ม Telegram
+              if (!$('#telegram_groups').length) {
+                $('#telegram-groups-container').before('<input type="hidden" id="telegram_groups" name="telegram_groups">');
+              }
+              
+              // ตั้งค่าและแสดงรายการกลุ่ม Telegram
+              try {
+                const groups = settings.telegram_groups ? JSON.parse(settings.telegram_groups) : [];
+                $('#telegram_groups').val(settings.telegram_groups || '[]');
+                renderTelegramGroups(groups);
+              } catch (e) {
+                console.error('Error parsing telegram groups:', e);
+                $('#telegram_groups').val('[]');
+                renderTelegramGroups([]);
+              }
+              
+              $('#notify_clock_in').prop('checked', settings.notify_clock_in === '1');
+              $('#notify_clock_out').prop('checked', settings.notify_clock_out === '1');
+              
+              $('#admin_username').val(settings.admin_username || '');
+              // ไม่โหลดรหัสผ่านเพื่อความปลอดภัย
+            } else {
+              showResult('ข้อผิดพลาด', 'ไม่สามารถโหลดการตั้งค่าได้: ' + response.message, 'danger');
+            }
+          },
+          error: function() {
+            showResult('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'danger');
+          }
+        });
+      }
+      
+      // ฟังก์ชันแสดงรายการกลุ่ม Telegram
+      function renderTelegramGroups(groups) {
+        const container = $('#telegram-groups-container');
+        container.empty();
+        
+        if (groups.length === 0) {
+          container.append('<div class="alert alert-info">ยังไม่มีกลุ่ม Telegram คลิกปุ่ม "เพิ่มกลุ่ม" เพื่อเพิ่มกลุ่มใหม่</div>');
+          return;
+        }
+        
+        groups.forEach((group, index) => {
+          const groupHtml = `
+            <div class="telegram-group-item">
+              <button type="button" class="btn btn-sm btn-outline-danger group-delete-btn" data-index="${index}">
+                <i class="fas fa-times"></i>
+              </button>
+              <h6 class="mb-2">${group.name} 
+                <span class="badge ${group.active ? 'bg-success' : 'bg-secondary'} ms-2">
+                  ${group.active ? 'ใช้งาน' : 'ปิดใช้งาน'}
+                </span>
+              </h6>
+              <div class="small text-muted">Chat ID: ${group.chat_id}</div>
+              <div class="mt-2">
+                <button class="btn btn-sm btn-outline-primary edit-group-btn" data-index="${index}">
+                  <i class="fas fa-edit me-1"></i> แก้ไข
+                </button>
+              </div>
+            </div>
+          `;
+          container.append(groupHtml);
+        });
+        
+        // จัดการปุ่มลบกลุ่ม
+        $('.group-delete-btn').on('click', function() {
+          const index = $(this).data('index');
+          deleteGroup(index);
+        });
+        
+        // จัดการปุ่มแก้ไขกลุ่ม
+        $('.edit-group-btn').on('click', function() {
+          const index = $(this).data('index');
+          editGroup(index);
+        });
+      }
+      
+      // ฟังก์ชันลบกลุ่ม
+      function deleteGroup(index) {
+        if (confirm('คุณต้องการลบกลุ่มนี้ใช่หรือไม่?')) {
+          try {
+            let groups = JSON.parse($('#telegram_groups').val() || '[]');
+            groups.splice(index, 1);
+            $('#telegram_groups').val(JSON.stringify(groups));
+            renderTelegramGroups(groups);
+            showResult('สำเร็จ', 'ลบกลุ่มเรียบร้อยแล้ว', 'success');
+          } catch (e) {
+            console.error('Error deleting group:', e);
+            showResult('ข้อผิดพลาด', 'ไม่สามารถลบกลุ่มได้', 'danger');
+          }
+        }
+      }
+      
+      // ฟังก์ชันแก้ไขกลุ่ม
+      function editGroup(index) {
+        try {
+          const groups = JSON.parse($('#telegram_groups').val() || '[]');
+          const group = groups[index];
+          
+          if (group) {
+            $('#group_index').val(index);
+            $('#group_name').val(group.name);
+            $('#group_chat_id').val(group.chat_id);
+            $('#group_active').prop('checked', group.active);
+            $('#groupModalTitle').text('แก้ไขกลุ่ม Telegram');
+            
+            const modal = new bootstrap.Modal(document.getElementById('telegramGroupModal'));
+            modal.show();
+          }
+        } catch (e) {
+          console.error('Error editing group:', e);
+          showResult('ข้อผิดพลาด', 'ไม่สามารถแก้ไขกลุ่มได้', 'danger');
+        }
+      }
+      
+      // ฟังก์ชันอัปเดตรายการกลุ่มใน dropdown สำหรับทดสอบ Telegram
+      function updateTestGroupDropdown() {
+        const select = $('#test_notify_group');
+        select.empty();
+        
+        try {
+          const groups = JSON.parse($('#telegram_groups').val() || '[]');
+          
+          if (groups.length === 0) {
+            select.append('<option value="">-- ไม่มีกลุ่ม --</option>');
+            return;
+          }
+          
+          groups.forEach((group, index) => {
+            if (group.active) {
+              select.append(`<option value="${group.chat_id}">${group.name}</option>`);
+            }
+          });
+          
+          if (select.find('option').length === 0) {
+            select.append('<option value="">-- ไม่มีกลุ่มที่เปิดใช้งาน --</option>');
+          }
+        } catch (e) {
+          console.error('Error updating test group dropdown:', e);
+          select.append('<option value="">-- ไม่สามารถโหลดข้อมูลกลุ่มได้ --</option>');
+        }
+      }
+      
+      // ฟังก์ชันอัปเดตรายการกลุ่มใน dropdown สำหรับทดสอบ Google Apps Script
+      function updateTestGasGroupDropdown() {
+        const select = $('#test_gas_group');
+        select.empty();
+        
+        try {
+          const groups = JSON.parse($('#telegram_groups').val() || '[]');
+          
+          if (groups.length === 0) {
+            select.append('<option value="">-- ไม่มีกลุ่ม --</option>');
+            return;
+          }
+          
+          groups.forEach((group, index) => {
+            if (group.active) {
+              select.append(`<option value="${group.chat_id}">${group.name}</option>`);
+            }
+          });
+          
+          if (select.find('option').length === 0) {
+            select.append('<option value="">-- ไม่มีกลุ่มที่เปิดใช้งาน --</option>');
+          }
+        } catch (e) {
+          console.error('Error updating test group dropdown:', e);
+          select.append('<option value="">-- ไม่สามารถโหลดข้อมูลกลุ่มได้ --</option>');
+        }
+      }
+
+      // ฟังก์ชันโหลดสถานะระบบ
+      function loadSystemStatus() {
+        // วันที่ติดตั้ง (สมมติ)
+        const installDate = new Date();
+        installDate.setMonth(installDate.getMonth() - 2); // สมมติว่าติดตั้งเมื่อ 2 เดือนที่แล้ว
+        $('#installDate').text(installDate.toLocaleDateString('th-TH'));
+        
+        // ดึงจำนวนพนักงาน
+        $.ajax({
+          url: '/api/admin/employees',
+          type: 'GET',
+          success: function(response) {
+            if (response.success) {
+              $('#employeeCount').text(response.employees.length);
+            } else {
+              $('#employeeCount').text('0');
+            }
+          },
+          error: function() {
+            $('#employeeCount').text('0');
+          }
+        });
+        
+        // ดึงจำนวนบันทึกเวลา
+        $.ajax({
+          url: '/api/admin/time-logs',
+          type: 'GET',
+          success: function(response) {
+            if (response.success && response.logs) {
+              $('#logCount').text(response.logs.length);
+            } else {
+              $('#logCount').text('0');
+            }
+          },
+          error: function() {
+            $('#logCount').text('0');
+          }
+        });
+      }
+
+      // ฟังก์ชันบันทึกการตั้งค่าทั้งหมด
+      function saveAllSettings() {
+        // ตรวจสอบรหัสผ่าน (ถ้ามีการกรอก)
+        const password = $('#admin_password').val();
+        const confirmPassword = $('#confirm_password').val();
+        
+        if (password && password !== confirmPassword) {
+          showResult('ข้อผิดพลาด', 'รหัสผ่านไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง', 'danger');
+          return;
+        }
+        
+        // รวบรวมการตั้งค่าทั้งหมด
+        const settings = [
+          { name: 'organization_name', value: $('#organization_name').val() },
+          { name: 'work_start_time', value: $('#work_start_time').val() },
+          { name: 'work_end_time', value: $('#work_end_time').val() },
+          { name: 'allowed_ip', value: $('#allowed_ip').val() },
+          { name: 'time_offset', value: $('#time_offset').val() },
+          
+          { name: 'telegram_bot_token', value: $('#telegram_bot_token').val() },
+          { name: 'telegram_groups', value: $('#telegram_groups').val() },
+          { name: 'notify_clock_in', value: $('#notify_clock_in').is(':checked') ? '1' : '0' },
+          { name: 'notify_clock_out', value: $('#notify_clock_out').is(':checked') ? '1' : '0' },
+          
+          { name: 'admin_username', value: $('#admin_username').val() },
+          { name: 'liff_id', value: $('#liff_id').val() },
+          
+          // เพิ่มการตั้งค่า Google Apps Script
+          { name: 'gas_web_app_url', value: $('#gas_web_app_url').val() },
+          { name: 'use_gas_for_telegram', value: $('#use_gas_for_telegram').is(':checked') ? '1' : '0' }
+        ];
+        
+        // เพิ่มรหัสผ่านเฉพาะเมื่อมีการกรอก
+        if (password) {
+          settings.push({ name: 'admin_password', value: password });
+        }
+        
+        // บันทึกการตั้งค่า
+        $.ajax({
+          url: '/api/admin/settings',
+          type: 'POST',
+          data: JSON.stringify({ settings }),
+          contentType: 'application/json',
+          success: function(response) {
+            if (response.success) {
+              // ล้างฟอร์มรหัสผ่าน
+              $('#admin_password').val('');
+              $('#confirm_password').val('');
+              
+              showResult('สำเร็จ', 'บันทึกการตั้งค่าเรียบร้อยแล้ว', 'success');
+            } else {
+              showResult('ข้อผิดพลาด', 'ไม่สามารถบันทึกการตั้งค่าได้: ' + response.message, 'danger');
+            }
+          },
+          error: function() {
+            showResult('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'danger');
+          }
+        });
+      }
+      
+      // ฟังก์ชันแสดงผลลัพธ์
+      function showResult(title, message, type) {
+        $('#resultModalTitle').text(title);
+        $('#resultModalBody').html(`<div class="alert alert-${type} mb-0">${message}</div>`);
+        
+        const modal = new bootstrap.Modal(document.getElementById('resultModal'));
+        modal.show();
+      }
+    });
+  </script>
+</body>
+</html>

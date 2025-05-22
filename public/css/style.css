@@ -1,0 +1,389 @@
+@font-face {
+  font-family: 'Digital dream Fat';
+  src: url('https://semicon.github.io/fonts/DigitaldreamFat.woff2') format('woff2'),
+    url('https://semicon.github.io/fonts/DigitaldreamFat.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=K2D&family=Kanit&family=Sriracha&display=swap');
+
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  font-family: 'K2D', sans-serif;
+}
+
+body {
+  font-family: 'Kanit', sans-serif;
+  color: #333;
+  padding: 20px;
+  border: none;
+  font-size: 1.05rem;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #3843dd, #659ccf, #73bde0, #84edf4);
+  background-size: 400% 400%;
+  animation: gradient 20s ease infinite;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* เพิ่มเอฟเฟกต์พาร์ติเคิลที่ลอยอยู่ในพื้นหลัง */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle, rgba(255, 255, 255, 0.15) 2px, transparent 2px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px, 30px 30px;
+  background-position: 0 0, 25px 25px;
+  animation: particles 20s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes particles {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50px);
+  }
+}
+
+input#employee {
+  font-family: 'Kanit', sans-serif;
+  width: 282px;
+  height: 60px;
+  background-color: #1a237e;
+  color: #ffeb3b;
+  margin-block-start: 5px;
+  border-radius: 36px;
+  font-size: 20px;
+  border: none;
+  padding: 0 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+input#employee::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(30deg);
+  animation: inputShine 6s infinite linear;
+  pointer-events: none;
+}
+
+input#employee:focus {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 0 10px rgba(255, 235, 59, 0.3);
+  transform: translateY(-3px);
+  outline: none;
+}
+
+input#employee:hover {
+  background-color: #283593;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes inputShine {
+  0% {
+    transform: translateX(-100%) rotate(30deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(30deg);
+  }
+}
+
+div#showtxt {
+  font-size: 27px;
+  margin-top: 20px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s forwards;
+  animation-delay: 0.3s;
+}
+
+.site-logo {
+  content: url("https://www.huana-nbp.go.th/index/add_file/P0D284NMon35557.png");
+  display: inline-block;
+  margin-top: 20px;
+  width: auto;
+  height: 100px;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.site-logo:hover {
+  transform: scale(1.02);
+  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.2));
+}
+
+.msgBg {
+  background-color: transparent;
+}
+
+.wrapper {
+  background: rgba(240, 240, 245, 0.9);
+  width: 350px;
+  padding: 25px;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(5px);
+  transform: translateY(30px);
+  opacity: 0;
+  animation: slideUp 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.wrapper:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+}
+
+@keyframes gradientBorder {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes borderGlow {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/** #### digital clock #### **/
+.clock {
+  font-family: 'Digital dream Fat';
+  font-size: 28px;
+  color: #00e6fc;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px rgba(0, 230, 252, 0.7);
+  width: 100%;
+  background: linear-gradient(135deg, #263238, #37474f);
+  padding: 15px 5px;
+  display: flex;
+  justify-content: center;
+  border: 2px solid rgba(0, 230, 252, 0.5);
+  border-radius: 12px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 230, 252, 0.3);
+  position: relative;
+  overflow: hidden;
+  transform: perspective(500px) rotateX(2deg);
+  transition: all 0.3s ease;
+  /** กรอบนาฬิกา **/
+  padding: 5px 0px 5px 10px;
+  display: inline-block;
+  border: 3px solid #304b89;
+  border-radius: 2px;
+  outline-style: solid;
+  outline-color: #1a237e;
+}
+
+.clock:hover {
+  transform: perspective(500px) rotateX(0deg);
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 230, 252, 0.4);
+  border-color: rgba(0, 230, 252, 0.8);
+}
+
+/* เพิ่มเอฟเฟกต์แสงเคลื่อนไหวบนนาฬิกา */
+.clock::before {
+  content: '';
+  position: absolute;
+  top: -180%;
+  left: -50%;
+  width: 200%;
+  height: 500%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(35deg);
+  animation: inputShine 8s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+/* ปรับปรุงเอฟเฟกต์แสงเคลื่อนไหวบนนาฬิกา */
+.clock::before {
+  content: '';
+  position: absolute;
+  top: -180%;
+  left: -50%;
+  width: 200%;
+  height: 500%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(35deg);
+  animation: clockShine a8s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+/* เพิ่มเอฟเฟกต์จุดกระพริบคั่นระหว่างเวลา */
+.clock .separator {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes clockShine {
+  0% {
+    transform: translateX(-200%) rotate(35deg);
+  }
+  100% {
+    transform: translateX(200%) rotate(35deg);
+  }
+}
+
+/* เพิ่มอนิเมชั่นสำหรับทุกองค์ประกอบเมื่อโหลดหน้า */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* เพิ่ม media query สำหรับอุปกรณ์เคลื่อนที่ */
+@media (max-width: 768px) {
+  .wrapper {
+    width: 95%;
+    max-width: 350px;
+  }
+  
+  input#employee {
+    width: 100%;
+  }
+}
+
+/* เอฟเฟกต์เมื่อโหลดหน้า */
+body {
+  animation: fadeIn 1s ease;
+}
+
+/* ปุ่ม Clock In และ Clock Out */
+button, input[type="submit"], input[type="button"] {
+  padding: 18px 25px;
+  border-radius: 8px;
+  border: none;
+  font-family: 'Kanit', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ปุ่ม Clock In */
+#clockin {
+    background: linear-gradient(to right, hsl(240.92deg 50% 45%), #5c5fc0) !important;
+}
+
+/* ปุ่ม Clock Out */
+#clockout {
+    background: linear-gradient(to right, #f57c00, #ff9800) !important;
+}
+
+button:hover, input[type="submit"]:hover, input[type="button"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:active, input[type="submit"]:active, input[type="button"]:active {
+  transform: scale(0.98);
+}
+
+/* เพิ่มเอฟเฟกต์เมื่อโฮเวอร์ปุ่ม */
+button::before, input[type="submit"]::before, input[type="button"]::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(30deg);
+  animation: buttonShine 6s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes buttonShine {
+  0% {
+    transform: translateX(-300%) rotate(30deg);
+  }
+  100% {
+    transform: translateX(300%) rotate(30deg);
+  }
+}

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>จัดการข้อมูลการลงเวลา - ระบบลงเวลาออนไลน์</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+  <!-- Flatpickr CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/admin-style.css">
+</head>
+<body>
+  <!-- ส่วนหัว -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/admin/dashboard.html">
+        <i class="fas fa-clock me-2"></i> ระบบลงเวลาออนไลน์
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="/admin/dashboard.html">
+              <i class="fas fa-tachometer-alt me-1"></i> แดชบอร์ด
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/time-logs.html">
+              <i class="fas fa-clipboard-list me-1"></i> ประวัติการลงเวลา
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/employees.html">
+              <i class="fas fa-users me-1"></i> จัดการพนักงาน
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/time-edit.html">
+              <i class="fas fa-edit me-1"></i> แก้ไขการลงเวลา
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/settings.html">
+              <i class="fas fa-cogs me-1"></i> ตั้งค่าระบบ
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/data-cleanup.html">
+              <i class="fas fa-broom me-1"></i> จัดการข้อมูล
+            </a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="logout-btn">
+              <i class="fas fa-sign-out-alt me-1"></i> ออกจากระบบ
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- เนื้อหาหลัก -->
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>
+        <i class="fas fa-edit text-primary me-2"></i> จัดการข้อมูลการลงเวลา
+      </h2>
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+        <i class="fas fa-plus me-1"></i> เพิ่มการลงเวลาใหม่
+      </button>
+    </div>
+
+    <!-- ตัวกรอง -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <form id="filter-form" class="row g-3">
+          <div class="col-md-4">
+            <label for="employeeFilter" class="form-label">พนักงาน</label>
+            <select class="form-select" id="employeeFilter">
+              <option value="">ทั้งหมด</option>
+              <!-- ตัวเลือกพนักงานจะถูกเพิ่มจาก JavaScript -->
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="fromDate" class="form-label">จากวันที่</label>
+            <input type="date" class="form-control" id="fromDate">
+          </div>
+          <div class="col-md-3">
+            <label for="toDate" class="form-label">ถึงวันที่</label>
+            <input type="date" class="form-control" id="toDate">
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fas fa-search me-1"></i> ค้นหา
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ตารางข้อมูลการลงเวลา -->
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="timeLogsTable" class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>รหัสพนักงาน</th>
+                <th>ชื่อ-นามสกุล</th>
+                <th>วันที่</th>
+                <th>เวลาเข้า</th>
+                <th>เวลาออก</th>
+                <th>ระยะเวลา</th>
+                <th>หมายเหตุ</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- ข้อมูลจะถูกเพิ่มจาก JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ฟุตเตอร์ -->
+  <footer class="bg-light py-3 mt-5 border-top">
+    <div class="container text-center text-muted small">
+      &copy; <span id="currentYear"></span> ระบบลงเวลาออนไลน์ | พัฒนาโดย ผู้ช่วยเจ้าพนักงานธุรการ สำนักปลัด
+    </div>
+  </footer>
+  
+  <!-- Modal แก้ไขข้อมูลการลงเวลา -->
+  <div class="modal fade" id="editRecordModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">แก้ไขข้อมูลการลงเวลา</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editRecordForm">
+            <input type="hidden" id="editRecordId">
+            <input type="hidden" id="editEmployeeId">
+            
+            <div class="mb-3">
+              <label class="form-label">พนักงาน</label>
+              <input type="text" class="form-control" id="editEmployeeName" readonly>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="editClockInDate" class="form-label">วันที่ลงเวลาเข้า</label>
+                <input type="date" class="form-control" id="editClockInDate" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editClockInTime" class="form-label">เวลาเข้า</label>
+                <input type="time" class="form-control" id="editClockInTime" required>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="editClockOutDate" class="form-label">วันที่ลงเวลาออก</label>
+                <input type="date" class="form-control" id="editClockOutDate">
+              </div>
+              <div class="col-md-6">
+                <label for="editClockOutTime" class="form-label">เวลาออก</label>
+                <input type="time" class="form-control" id="editClockOutTime">
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="editNote" class="form-label">หมายเหตุ</label>
+              <textarea class="form-control" id="editNote" rows="2"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-primary" id="saveEditBtn">บันทึก</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal เพิ่มข้อมูลการลงเวลาใหม่ -->
+  <div class="modal fade" id="addRecordModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">เพิ่มข้อมูลการลงเวลา</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addRecordForm">            
+            <div class="mb-3">
+              <label for="addEmployeeId" class="form-label">พนักงาน <span class="text-danger">*</span></label>
+              <select class="form-select" id="addEmployeeId" required>
+                <option value="">-- เลือกพนักงาน --</option>
+                <!-- ตัวเลือกพนักงานจะถูกเพิ่มจาก JavaScript -->
+              </select>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="addClockInDate" class="form-label">วันที่ลงเวลาเข้า <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="addClockInDate" required>
+              </div>
+              <div class="col-md-6">
+                <label for="addClockInTime" class="form-label">เวลาเข้า <span class="text-danger">*</span></label>
+                <input type="time" class="form-control" id="addClockInTime" required>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="addClockOutDate" class="form-label">วันที่ลงเวลาออก</label>
+                <input type="date" class="form-control" id="addClockOutDate">
+              </div>
+              <div class="col-md-6">
+                <label for="addClockOutTime" class="form-label">เวลาออก</label>
+                <input type="time" class="form-control" id="addClockOutTime">
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="addNote" class="form-label">หมายเหตุ</label>
+              <textarea class="form-control" id="addNote" rows="2"></textarea>
+            </div>
+            
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="skipNotification" checked>
+              <label class="form-check-label" for="skipNotification">
+                ไม่ต้องส่งแจ้งเตือน
+              </label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-primary" id="saveAddBtn">บันทึก</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal ยืนยันการลบ -->
+  <div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">ยืนยันการลบ</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>คุณต้องการลบข้อมูลการลงเวลาของ <span id="deleteEmployeeName" class="fw-bold"></span> วันที่ <span id="deleteDate" class="fw-bold"></span> ใช่หรือไม่?</p>
+          <p class="text-danger">การลบข้อมูลนี้จะไม่สามารถกู้คืนได้</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">ลบข้อมูล</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+  <!-- Flatpickr JS (สำหรับปฏิทิน) -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
+  
+  <script>
+    $(document).ready(function() {
+      // ตรวจสอบการล็อกอิน
+      if (!sessionStorage.getItem('admin_logged_in')) {
+        window.location.href = '/admin/index.html';
+        return;
+      }
+      
+      // ตั้งค่าปีปัจจุบัน
+      $('#currentYear').text(new Date().getFullYear());
+      
+      // ตั้งค่าวันที่เริ่มต้นและสิ้นสุด (เดือนปัจจุบัน)
+      const today = new Date();
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+      
+      $('#fromDate').val(formatDate(firstDay));
+      $('#toDate').val(formatDate(today));
+      $('#addClockInDate').val(formatDate(today));
+      $('#addClockOutDate').val(formatDate(today));
+      
+      // ตั้งค่าเวลาเริ่มต้น
+      const currentHour = String(today.getHours()).padStart(2, '0');
+      const currentMinute = String(today.getMinutes()).padStart(2, '0');
+      $('#addClockInTime').val(`${currentHour}:${currentMinute}`);
+      
+      // โหลดรายชื่อพนักงาน
+      loadEmployees();
+      
+      // ตั้งค่า DataTable
+      const timeLogsTable = $('#timeLogsTable').DataTable({
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/th.json'
+        },
+        columns: [
+          { data: 'emp_code' },
+          { data: 'full_name' },
+          { data: 'clock_in_date' },
+          { data: 'clock_in_time' },
+          { data: 'clock_out_time', 
+            render: function(data) {
+              return data || '-';
+            } 
+          },
+          { data: 'duration', 
+            render: function(data) {
+              return data || '-';
+            } 
+          },
+          { data: 'note', 
+            render: function(data) {
+              return data || '-';
+            } 
+          },
+          { data: null, 
+            orderable: false,
+            render: function(data) {
+              return '<div class="btn-group" role="group">' +
+                     '<button class="btn btn-sm btn-primary edit-btn" data-id="' + data.id + '">' +
+                     '<i class="fas fa-edit"></i></button>' +
+                     '<button class="btn btn-sm btn-danger delete-btn" data-id="' + data.id + '">' +
+                     '<i class="fas fa-trash"></i></button>' +
+                     '</div>';
+            } 
+          }
+        ]
+      });
+      
+      // เมื่อส่งฟอร์มค้นหา
+      $('#filter-form').on('submit', function(e) {
+        e.preventDefault();
+        loadTimeLogsData();
+      });
+      
+      // เมื่อคลิกปุ่มแก้ไข
+      $('#timeLogsTable').on('click', '.edit-btn', function() {
+        const id = $(this).data('id');
+        const data = timeLogsTable.row($(this).closest('tr')).data();
+        
+        // เตรียมข้อมูลสำหรับการแก้ไข
+        $('#editRecordId').val(data.id);
+        $('#editEmployeeId').val(data.employee_id);
+        $('#editEmployeeName').val(data.full_name);
+        
+        // แยกวันที่และเวลา
+        if (data.clock_in) {
+          const clockInDateTime = new Date(data.clock_in);
+          $('#editClockInDate').val(formatDate(clockInDateTime));
+          $('#editClockInTime').val(formatTime(clockInDateTime));
+        }
+        
+        if (data.clock_out) {
+          const clockOutDateTime = new Date(data.clock_out);
+          $('#editClockOutDate').val(formatDate(clockOutDateTime));
+          $('#editClockOutTime').val(formatTime(clockOutDateTime));
+        } else {
+          $('#editClockOutDate').val('');
+          $('#editClockOutTime').val('');
+        }
+        
+        $('#editNote').val(data.note || '');
+        
+        // แสดง Modal
+        const modal = new bootstrap.Modal(document.getElementById('editRecordModal'));
+        modal.show();
+      });
+      
+      // เมื่อคลิกปุ่มลบ
+      $('#timeLogsTable').on('click', '.delete-btn', function() {
+        const id = $(this).data('id');
+        const data = timeLogsTable.row($(this).closest('tr')).data();
+        
+        $('#deleteEmployeeName').text(data.full_name);
+        $('#deleteDate').text(data.clock_in_date);
+        
+        // เก็บ ID ไว้สำหรับการลบ
+        $('#confirmDeleteBtn').data('id', id);
+        
+        // แสดง Modal
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+      });
+      
+      // บันทึกการแก้ไข
+      $('#saveEditBtn').on('click', function() {
+        const recordId = $('#editRecordId').val();
+        const clockInDate = $('#editClockInDate').val();
+        const clockInTime = $('#editClockInTime').val();
+        const clockOutDate = $('#editClockOutDate').val();
+        const clockOutTime = $('#editClockOutTime').val();
+        const note = $('#editNote').val();
+        
+        if (!clockInDate || !clockInTime) {
+          alert('กรุณากรอกวันที่และเวลาเข้างานให้ครบถ้วน');
+          return;
+        }
+        
+        // สร้าง datetime string
+        let clockIn = clockInDate + 'T' + clockInTime + ':00';
+        let clockOut = null;
+        
+        if (clockOutDate && clockOutTime) {
+          clockOut = clockOutDate + 'T' + clockOutTime + ':00';
+        }
+        
+        // ส่งข้อมูลไปยัง API
+        $.ajax({
+          url: '/api/admin/time-logs/' + recordId,
+          type: 'PUT',
+          data: JSON.stringify({
+            clock_in: clockIn,
+            clock_out: clockOut,
+            note: note
+          }),
+          contentType: 'application/json',
+          success: function(response) {
+            if (response.success) {
+              // ซ่อน Modal
+              $('#editRecordModal').modal('hide');
+              // โหลดข้อมูลใหม่
+              loadTimeLogsData();
+              alert('บันทึกข้อมูลเรียบร้อย');
+            } else {
+              alert('เกิดข้อผิดพลาด: ' + response.message);
+            }
+          },
+          error: function() {
+            alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+          }
+        });
+      });
+      
+      // บันทึกการเพิ่มข้อมูล
+      $('#saveAddBtn').on('click', function() {
+        const employeeId = $('#addEmployeeId').val();
+        const clockInDate = $('#addClockInDate').val();
+        const clockInTime = $('#addClockInTime').val();
+        const clockOutDate = $('#addClockOutDate').val();
+        const clockOutTime = $('#addClockOutTime').val();
+        const note = $('#addNote').val();
+        const skipNotification = $('#skipNotification').is(':checked');
+        
+        if (!employeeId || !clockInDate || !clockInTime) {
+          alert('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
+          return;
+        }
+        
+        // สร้าง datetime string
+        let clockIn = clockInDate + 'T' + clockInTime + ':00';
+        let clockOut = null;
+        
+        if (clockOutDate && clockOutTime) {
+          clockOut = clockOutDate + 'T' + clockOutTime + ':00';
+        }
+        
+        // ส่งข้อมูลไปยัง API
+        $.ajax({
+          url: '/api/admin/time-logs',
+          type: 'POST',
+          data: JSON.stringify({
+            employee_id: employeeId,
+            clock_in: clockIn,
+            clock_out: clockOut,
+            note: note,
+            skip_notification: skipNotification
+          }),
+          contentType: 'application/json',
+          success: function(response) {
+            if (response.success) {
+              // ซ่อน Modal
+              $('#addRecordModal').modal('hide');
+              // โหลดข้อมูลใหม่
+              loadTimeLogsData();
+              alert('เพิ่มข้อมูลเรียบร้อย');
+              
+              // ล้างฟอร์ม (ยกเว้นวันที่และเวลา)
+              $('#addEmployeeId').val('');
+              $('#addNote').val('');
+            } else {
+              alert('เกิดข้อผิดพลาด: ' + response.message);
+            }
+          },
+          error: function() {
+            alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+          }
+        });
+      });
+      
+      // เมื่อคลิกปุ่มยืนยันการลบ
+      $('#confirmDeleteBtn').on('click', function() {
+        const id = $(this).data('id');
+        
+        $.ajax({
+          url: '/api/admin/time-logs/' + id,
+          type: 'DELETE',
+          success: function(response) {
+            if (response.success) {
+              // ซ่อน Modal
+              $('#deleteModal').modal('hide');
+              // โหลดข้อมูลใหม่
+              loadTimeLogsData();
+              alert('ลบข้อมูลเรียบร้อย');
+            } else {
+              alert('เกิดข้อผิดพลาด: ' + response.message);
+            }
+          },
+          error: function() {
+            alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+          }
+        });
+      });
+      
+      // ออกจากระบบ
+      $('#logout-btn').on('click', function(e) {
+        e.preventDefault();
+        sessionStorage.removeItem('admin_logged_in');
+        window.location.href = '/admin/index.html';
+      });
+      
+      // โหลดข้อมูลเริ่มต้น
+      loadTimeLogsData();
+      
+      // ฟังก์ชันโหลดรายชื่อพนักงาน
+      function loadEmployees() {
+        $.ajax({
+          url: '/api/admin/employees',
+          type: 'GET',
+          success: function(response) {
+            if (response.success) {
+              const filterSelect = $('#employeeFilter');
+              const addSelect = $('#addEmployeeId');
+              
+              filterSelect.find('option:not(:first)').remove();
+              addSelect.find('option:not(:first)').remove();
+              
+              response.employees.forEach(function(employee) {
+                if (employee.status === 'active') {
+                  filterSelect.append(`<option value="${employee.id}">${employee.emp_code} - ${employee.full_name}</option>`);
+                  addSelect.append(`<option value="${employee.id}">${employee.emp_code} - ${employee.full_name}</option>`);
+                }
+              });
+            }
+          }
+        });
+      }
+      
+      // ฟังก์ชันโหลดข้อมูลการลงเวลา
+      function loadTimeLogsData() {
+        const fromDate = $('#fromDate').val();
+        const toDate = $('#toDate').val();
+        const employeeId = $('#employeeFilter').val();
+        
+        $.ajax({
+          url: '/api/admin/time-logs',
+          type: 'GET',
+          data: {
+            from_date: fromDate,
+            to_date: toDate,
+            employee_id: employeeId
+          },
+          success: function(response) {
+            if (response.success) {
+              timeLogsTable.clear().rows.add(response.logs).draw();
+            } else {
+              alert('เกิดข้อผิดพลาด: ' + response.message);
+            }
+          },
+          error: function() {
+            alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+          }
+        });
+      }
+      
+      // ฟังก์ชันแปลงวันที่เป็นรูปแบบ YYYY-MM-DD
+      function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+      
+      // ฟังก์ชันแปลงเวลาเป็นรูปแบบ HH:MM
+      function formatTime(date) {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+      }
+    });
+  </script>
+</body>
+</html>

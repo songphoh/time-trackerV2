@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แดชบอร์ด - ระบบลงเวลาออนไลน์</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/admin-style.css">
+</head>
+<body>
+  <!-- ส่วนหัว -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/admin/dashboard.html">
+        <i class="fas fa-clock me-2"></i> ระบบลงเวลาออนไลน์
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="/admin/dashboard.html">
+              <i class="fas fa-tachometer-alt me-1"></i> แดชบอร์ด
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/time-logs.html">
+              <i class="fas fa-clipboard-list me-1"></i> ประวัติการลงเวลา
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/employees.html">
+              <i class="fas fa-users me-1"></i> จัดการพนักงาน
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/time-edit.html">
+              <i class="fas fa-edit me-1"></i> แก้ไขการลงเวลา
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/settings.html">
+              <i class="fas fa-cogs me-1"></i> ตั้งค่าระบบ
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/data-cleanup.html">
+              <i class="fas fa-broom me-1"></i> จัดการข้อมูล
+            </a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="logout-btn">
+              <i class="fas fa-sign-out-alt me-1"></i> ออกจากระบบ
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- เนื้อหาหลัก -->
+  <div class="container py-4">
+    <h2 class="mb-4">
+      <i class="fas fa-tachometer-alt text-primary me-2"></i> แดชบอร์ด
+    </h2>
+
+    <div class="row g-4">
+      <!-- บัตรสรุปข้อมูล -->
+      <div class="col-md-4">
+        <div class="card h-100 border-primary border-start border-5">
+          <div class="card-body d-flex align-items-center">
+            <div class="flex-shrink-0 bg-primary bg-opacity-10 p-3 rounded">
+              <i class="fas fa-users fa-3x text-primary"></i>
+            </div>
+            <div class="ms-3">
+              <h5 class="card-title text-primary">พนักงานทั้งหมด</h5>
+              <h3 class="mb-0 fw-bold" id="totalEmployees">0</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card h-100 border-success border-start border-5">
+          <div class="card-body d-flex align-items-center">
+            <div class="flex-shrink-0 bg-success bg-opacity-10 p-3 rounded">
+              <i class="fas fa-sign-in-alt fa-3x text-success"></i>
+            </div>
+            <div class="ms-3">
+              <h5 class="card-title text-success">เข้างานวันนี้</h5>
+              <h3 class="mb-0 fw-bold" id="checkedInToday">0</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card h-100 border-warning border-start border-5">
+          <div class="card-body d-flex align-items-center">
+            <div class="flex-shrink-0 bg-warning bg-opacity-10 p-3 rounded">
+              <i class="fas fa-sign-out-alt fa-3x text-warning"></i>
+            </div>
+            <div class="ms-3">
+              <h5 class="card-title text-warning">ยังไม่ออกงาน</h5>
+              <h3 class="mb-0 fw-bold" id="notCheckedOutToday">0</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ตารางการลงเวลาล่าสุด -->
+    <div class="card mt-4">
+      <div class="card-header bg-white">
+        <h5 class="card-title mb-0">
+          <i class="fas fa-history text-primary me-2"></i> การลงเวลาล่าสุด
+        </h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>รหัสพนักงาน</th>
+                <th>ชื่อ-นามสกุล</th>
+                <th>วันที่</th>
+                <th>เวลาเข้า</th>
+                <th>เวลาออก</th>
+                <th>หมายเหตุ</th>
+              </tr>
+            </thead>
+            <tbody id="recentLogsTableBody">
+              <!-- ข้อมูลจะถูกเพิ่มจาก JavaScript -->
+              <tr>
+                <td colspan="6" class="text-center py-3">กำลังโหลดข้อมูล...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ข้อความแสดงวันเวลาการอัปเดต -->
+    <div class="text-end text-muted small mt-3">
+      อัปเดตล่าสุด: <span id="lastUpdated"></span>
+      <button id="refreshBtn" class="btn btn-sm btn-outline-primary ms-2">
+        <i class="fas fa-sync-alt"></i> รีเฟรช
+      </button>
+    </div>
+  </div>
+
+  <!-- ฟุตเตอร์ -->
+  <footer class="bg-light py-3 mt-5 border-top">
+    <div class="container text-center text-muted small">
+      &copy; <span id="currentYear"></span> ระบบลงเวลาออนไลน์ | พัฒนาโดย ผู้ช่วยเจ้าพนักงานธุรการ สำนักปลัด
+    </div>
+  </footer>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script>
+    $(document).ready(function() {
+      // ตรวจสอบการล็อกอิน
+      if (!sessionStorage.getItem('admin_logged_in')) {
+        window.location.href = '/admin/index.html';
+        return;
+      }
+      
+      // ตั้งค่าปีปัจจุบัน
+      $('#currentYear').text(new Date().getFullYear());
+      
+      // โหลดข้อมูลแดชบอร์ด
+      loadDashboardData();
+      
+      // รีเฟรชข้อมูลเมื่อกดปุ่ม
+      $('#refreshBtn').on('click', function() {
+        loadDashboardData();
+      });
+      
+      // ออกจากระบบ
+      $('#logout-btn').on('click', function(e) {
+        e.preventDefault();
+        sessionStorage.removeItem('admin_logged_in');
+        window.location.href = '/admin/index.html';
+      });
+      
+      function loadDashboardData() {
+        $.ajax({
+          url: '/api/admin/dashboard',
+          type: 'GET',
+          dataType: 'json',
+          success: function(response) {
+            if (response.success) {
+              const data = response.dashboard;
+              
+              // อัปเดตข้อมูลสรุป
+              $('#totalEmployees').text(data.totalEmployees);
+              $('#checkedInToday').text(data.checkedInToday);
+              $('#notCheckedOutToday').text(data.notCheckedOutToday);
+              
+              // อัปเดตรายการล่าสุด
+              updateRecentLogs(data.recentLogs);
+              
+              // อัปเดตเวลา
+              const now = new Date();
+              $('#lastUpdated').text(now.toLocaleString('th-TH'));
+            } else {
+              alert('เกิดข้อผิดพลาด: ' + response.message);
+            }
+          },
+          error: function() {
+            alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+          }
+        });
+      }
+      
+      function updateRecentLogs(logs) {
+        if (!logs || logs.length === 0) {
+          $('#recentLogsTableBody').html('<tr><td colspan="6" class="text-center py-3">ไม่พบข้อมูล</td></tr>');
+          return;
+        }
+        
+        let html = '';
+        logs.forEach(log => {
+          html += `
+            <tr>
+              <td>${log.emp_code}</td>
+              <td>${log.full_name}</td>
+              <td>${log.clock_in_date}</td>
+              <td>${log.clock_in_time}</td>
+              <td>${log.clock_out_time || '-'}</td>
+              <td>${log.note || '-'}</td>
+            </tr>
+          `;
+        });
+        
+        $('#recentLogsTableBody').html(html);
+      }
+    });
+  </script>
+</body>
+</html>

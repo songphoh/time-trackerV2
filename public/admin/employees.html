@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>จัดการพนักงาน - ระบบลงเวลาออนไลน์</title>
+  <link rel="icon" href="https://www.huana-nbp.go.th/index/add_file/P0D284NMon35557.png" type="image/png">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/admin-style.css">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+  <!-- Library สำหรับอ่านไฟล์ Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- Library สำหรับอ่านไฟล์ CSV -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+</head>
+<body>
+  <!-- ส่วนหัว -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/admin/dashboard.html">
+        <i class="fas fa-clock me-2"></i> ระบบลงเวลาออนไลน์
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="/admin/dashboard.html">
+              <i class="fas fa-tachometer-alt me-1"></i> แดชบอร์ด
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/time-logs.html">
+              <i class="fas fa-clipboard-list me-1"></i> ประวัติการลงเวลา
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/employees.html">
+              <i class="fas fa-users me-1"></i> จัดการพนักงาน
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/time-edit.html">
+              <i class="fas fa-edit me-1"></i> แก้ไขการลงเวลา
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/settings.html">
+              <i class="fas fa-cogs me-1"></i> ตั้งค่าระบบ
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/data-cleanup.html">
+              <i class="fas fa-broom me-1"></i> จัดการข้อมูล
+            </a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="logout-btn">
+              <i class="fas fa-sign-out-alt me-1"></i> ออกจากระบบ
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- เนื้อหาหลัก -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+      <i class="fas fa-users text-primary me-2"></i> จัดการพนักงาน
+    </h2>
+    <div>
+      <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#importEmployeeModal">
+        <i class="bi bi-file-earmark-excel me-1"></i> นำเข้าจาก Excel/CSV
+      </button>
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#employeeModal">
+        <i class="fas fa-plus me-1"></i> เพิ่มพนักงาน
+      </button>
+      <button class="btn btn-danger ms-2" id="deleteAllBtn">
+        <i class="fas fa-trash me-1"></i> ลบพนักงานทั้งหมด
+      </button>
+    </div>
+  </div>
+
+    <!-- ตารางพนักงาน -->
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="employeesTable" class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>รหัสพนักงาน</th>
+                <th>ชื่อ-นามสกุล</th>
+                <th>ตำแหน่ง</th>
+                <th>แผนก/ฝ่าย</th>
+                <th>สถานะ</th>
+                <th>วันที่สร้าง</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- ข้อมูลจะถูกเพิ่มจาก JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ฟุตเตอร์ -->
+  <footer class="bg-light py-3 mt-5 border-top">
+    <div class="container text-center text-muted small">
+      &copy; <span id="currentYear"></span> ระบบลงเวลาออนไลน์ | พัฒนาโดย ผู้ช่วยเจ้าพนักงานธุรการ สำนักปลัด
+    </div>
+  </footer>
+  
+  <!-- Modal สำหรับนำเข้าพนักงาน -->
+<div class="modal fade" id="importEmployeeModal" tabindex="-1" aria-labelledby="importEmployeeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="importEmployeeModalLabel">นำเข้ารายชื่อพนักงานจาก Excel/CSV</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info">
+          <strong>คำแนะนำ:</strong> ไฟล์ Excel/CSV ควรมีคอลัมน์ดังนี้
+          <ul>
+            <li>รหัสพนักงาน (emp_code) - จำเป็นต้องมี</li>
+            <li>ชื่อ-นามสกุล (full_name) - จำเป็นต้องมี</li>
+            <li>ตำแหน่ง (position) - ไม่บังคับ</li>
+            <li>แผนก (department) - ไม่บังคับ</li>
+          </ul>
+          <a href="#" id="downloadTemplateBtn" class="btn btn-sm btn-outline-primary mt-2">
+            <i class="bi bi-download"></i> ดาวน์โหลดเทมเพลต
+          </a>
+        </div>
+
+        <div class="mb-3">
+          <label for="fileImport" class="form-label">อัปโหลดไฟล์ Excel หรือ CSV</label>
+          <input class="form-control" type="file" id="fileImport" accept=".xlsx,.xls,.csv">
+        </div>
+
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="skipExistingCheck" checked>
+          <label class="form-check-label" for="skipExistingCheck">
+            ข้ามรายการที่มีรหัสพนักงานซ้ำในระบบ
+          </label>
+        </div>
+
+        <div id="previewArea" class="d-none">
+          <h6>ตัวอย่างข้อมูล (10 รายการแรก)</h6>
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered">
+              <thead>
+                <tr>
+                  <th>รหัสพนักงาน</th>
+                  <th>ชื่อ-นามสกุล</th>
+                  <th>ตำแหน่ง</th>
+                  <th>แผนก</th>
+                  <th>สถานะ</th>
+                </tr>
+              </thead>
+              <tbody id="previewBody">
+                <!-- จะถูกเติมด้วย JavaScript -->
+              </tbody>
+            </table>
+          </div>
+          <div class="alert alert-warning mt-2" id="previewWarning" style="display: none;">
+            <i class="bi bi-exclamation-triangle"></i> พบข้อมูลที่อาจมีปัญหา โปรดตรวจสอบข้อมูลในตารางให้ครบถ้วน
+          </div>
+          <div class="text-end">
+            <span id="totalRecords" class="me-2">พบข้อมูลทั้งหมด 0 รายการ</span>
+          </div>
+        </div>
+
+        <div class="progress mt-3 d-none" id="uploadProgress">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">0%</div>
+        </div>
+        
+        <div id="importResult" class="mt-3 d-none">
+          <div class="alert alert-success" id="importSuccess" style="display: none;">
+            นำเข้าข้อมูลสำเร็จ <span id="importSuccessCount">0</span> รายการ
+          </div>
+          <div class="alert alert-warning" id="importWarning" style="display: none;">
+            ข้ามข้อมูลที่มีรหัสซ้ำ <span id="importSkippedCount">0</span> รายการ
+          </div>
+          <div class="alert alert-danger" id="importError" style="display: none;">
+            เกิดข้อผิดพลาด <span id="importErrorCount">0</span> รายการ
+            <ul id="importErrorList"></ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+        <button type="button" class="btn btn-primary" id="previewBtn">ตรวจสอบข้อมูล</button>
+        <button type="button" class="btn btn-success d-none" id="importBtn">นำเข้าข้อมูล</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Modal เพิ่ม/แก้ไขพนักงาน -->
+  <div class="modal fade" id="employeeModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">เพิ่มพนักงาน</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="employeeForm">
+            <input type="hidden" id="employeeId" value="">
+            
+            <div class="mb-3">
+              <label for="empCode" class="form-label">รหัสพนักงาน <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="empCode" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="fullName" class="form-label">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="fullName" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="position" class="form-label">ตำแหน่ง</label>
+              <input type="text" class="form-control" id="position">
+            </div>
+            
+            <div class="mb-3">
+              <label for="department" class="form-label">แผนก/ฝ่าย</label>
+              <input type="text" class="form-control" id="department">
+            </div>
+            
+            <div class="mb-3">
+              <label for="status" class="form-label">สถานะ</label>
+              <select class="form-select" id="status">
+                <option value="active">ใช้งาน</option>
+                <option value="inactive">ไม่ใช้งาน</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-primary" id="saveBtn">บันทึก</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal ยืนยันการลบ -->
+  <div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">ยืนยันการลบ</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>คุณต้องการลบพนักงาน <span id="deleteEmployeeName" class="fw-bold"></span> ใช่หรือไม่?</p>
+          <p class="text-danger small">หมายเหตุ: การลบพนักงานจะลบข้อมูลออกจากระบบอย่างถาวร ไม่สามารถกู้คืนได้</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">ลบ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal ยืนยันการลบพนักงานทั้งหมด -->
+  <div class="modal fade" id="deleteAllModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">ยืนยันการลบพนักงานทั้งหมด</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i> คำเตือน
+          </div>
+          <p>คุณกำลังจะลบพนักงานทั้งหมดออกจากระบบ การกระทำนี้ไม่สามารถเรียกคืนได้</p>
+          <p>พนักงานทั้งหมด <span id="totalEmployeeCount" class="fw-bold">0</span> คน จะถูกลบออกจากระบบ</p>
+          <p>กรุณาพิมพ์คำว่า <span class="fw-bold text-danger">"ยืนยันการลบ"</span> ในช่องด้านล่างเพื่อยืนยันการลบข้อมูล</p>
+          <div class="mb-3">
+            <input type="text" class="form-control" id="deleteConfirmText" placeholder="ยืนยันการลบ">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteAllBtn" disabled>ลบทั้งหมด</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+  
+  <!-- Custom JS -->
+  <script>
+    $(document).ready(function() {
+      // ตรวจสอบการล็อกอิน
+      if (!sessionStorage.getItem('admin_logged_in')) {
+        window.location.href = '/admin/index.html';
+        return;
+      }
+      
+      // ตั้งค่าปีปัจจุบัน
+      $('#currentYear').text(new Date().getFullYear());
+      
+      // ตั้งค่า DataTable
+      const employeesTable = $('#employeesTable').DataTable({
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/th.json'
+        },
+        columns: [
+          { data: 'emp_code' },
+          { data: 'full_name' },
+          { data: 'position', 
+            render: function(data) {
+              return data || '-';
+            } 
+          },
+          { data: 'department', 
+            render: function(data) {
+              return data || '-';
+            } 
+          },
+          { data: 'status', 
+            render: function(data) {
+              if (data === 'active') {
+                return '<span class="badge bg-success">ใช้งาน</span>';
+              } else {
+                return '<span class="badge bg-secondary">ไม่ใช้งาน</span>';
+              }
+            } 
+          },
+          { data: 'created_at', 
+            render: function(data) {
+              return new Date(data).toLocaleDateString('th-TH');
+            } 
+          },
+          { data: null, 
+            orderable: false,
+            render: function(data) {
+              return '<div class="btn-group" role="group">' +
+                     '<button class="btn btn-sm btn-primary edit-btn" data-id="' + data.id + '">' +
+                     '<i class="fas fa-edit"></i></button>' +
+                     '<button class="btn btn-sm btn-danger delete-btn" data-id="' + data.id + '">' +
+                     '<i class="fas fa-trash"></i></button>' +
+                     '</div>';
+            } 
+          }
+        ]
+      });
+      
+      // โหลดข้อมูลพนักงาน
+      loadEmployees();
+      
+      // เมื่อคลิกปุ่มแก้ไข
+      $('#employeesTable').on('click', '.edit-btn', function() {
+        const id = $(this).data('id');
+        
+        // แสดง loading
+        const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
+        modal.show();
+        
+        // ล้างฟอร์มก่อน
+        resetForm();
+        $('#modalTitle').text('กำลังโหลดข้อมูล...');
+        
+        // เรียก API เพื่อดึงข้อมูลล่าสุด
+        $.ajax({
+          url: '/api/admin/employees/' + id,
+          type: 'GET',
+          success: function(response) {
+            if (response.success) {
+              const data = response.employee;
+              
+              // กำหนดข้อมูลในฟอร์ม
+              $('#employeeId').val(data.id);
+              $('#empCode').val(data.emp_code);
+              $('#fullName').val(data.full_name);
+              $('#position').val(data.position || '');
+              $('#department').val(data.department || '');
+              $('#status').val(data.status);
+              
+              // เปลี่ยนหัวข้อ Modal
+              $('#modalTitle').text('แก้ไขพนักงาน');
+            } else {
+              alert('เกิดข้อผิดพลาด: ' + response.message);
+              modal.hide();
+            }
+          },
+          error: function() {
+            alert('ไม่สามารถดึงข้อมูลพนักงานได้');
+            modal.hide();
+          }
+        });
+      });
+      
+      // เมื่อคลิกปุ่มลบ
+      $('#employeesTable').on('click', '.delete-btn', function() {
+        const id = $(this).data('id');
+        const data = employeesTable.row($(this).closest('tr')).data();
+        
+        $('#deleteEmployeeName').text(data.full_name);
+        
+        // เก็บ ID ไว้สำหรับการลบ
+        $('#confirmDeleteBtn').data('id', id);
+        
+        // แสดง Modal
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+      });
+      
+      // เมื่อคลิกปุ่มยืนยันการลบ
+      $('#confirmDeleteBtn').on('click', function() {
+        const id = $(this).data('id');
+        deleteEmployee(id);
+      });
+      
+      // เมื่อแสดง Modal เพิ่มพนักงาน
+      $('#employeeModal').on('show.bs.modal', function(e) {
+        // ถ้าไม่ได้เรียกจากปุ่มแก้ไข ให้ล้างฟอร์ม
+        if (!$(e.relatedTarget).hasClass('edit-btn')) {
+          resetForm();
+        }
+      });
+      
+      // เมื่อคลิกปุ่มบันทึก
+      $('#saveBtn').on('click', function() {
+        saveEmployee();
+      });
+      
+      // ออกจากระบบ
+      $('#logout-btn').on('click', function(e) {
+        e.preventDefault();
+        sessionStorage.removeItem('admin_logged_in');
+        window.location.href = '/admin/index.html';
+      });
+      
+      // ฟังก์ชันโหลดข้อมูลพนักงาน
+      function loadEmployees() {
+        $.ajax({
+          url: '/api/admin/employees',
+          type: 'GET',
+          success: function(response) {
+            if (response.success) {
+              employeesTable.clear().rows.add(response.employees).draw();
+            } else {
+              alert('เกิดข้อผิดพลาด: ' + response.message);
+            }
+          },
+          error: function() {
+            alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+          }
+        });
+      }
+      
+      let isProcessing = false;
+
+      // ปรับปรุงฟังก์ชัน saveEmployee ให้มี loading
+      function saveEmployee() {
+        // ป้องกันการกดซ้ำ
+        if (isProcessing) return;
+        
+        // ตรวจสอบข้อมูลที่จำเป็น
+        const empCode = $('#empCode').val().trim();
+        const fullName = $('#fullName').val().trim();
+        
+        if (!empCode || !fullName) {
+          alert('กรุณากรอกรหัสและชื่อพนักงาน');
+          return;
+        }
+        
+        // เริ่มการประมวลผล
+        isProcessing = true; // ⭐ จุดนี้ที่ขาดไป!
+        
+        // แสดง loading
+        const saveBtn = $('#saveBtn');
+        const originalText = saveBtn.text();
+        saveBtn.text('กำลังบันทึก...').prop('disabled', true);
+        
+        // เตรียมข้อมูล
+        const employeeData = {
+          emp_code: empCode,
+          full_name: fullName,
+          position: $('#position').val().trim(),
+          department: $('#department').val().trim(),
+          status: $('#status').val()
+        };
+        
+        const id = $('#employeeId').val();
+        
+        if (id) {
+          // แก้ไขพนักงาน
+          $.ajax({
+            url: '/api/admin/employees/' + id,
+            type: 'PUT',
+            data: JSON.stringify(employeeData),
+            contentType: 'application/json',
+            success: function(response) {
+              if (response.success) {
+                $('#employeeModal').modal('hide');
+                loadEmployees();
+                alert('บันทึกข้อมูลเรียบร้อย');
+              } else {
+                alert('เกิดข้อผิดพลาด: ' + response.message);
+              }
+            },
+            error: function(xhr, status, error) {
+              console.error('Error:', xhr, status, error);
+              alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+            },
+            complete: function() {
+              // คืนค่าปุ่มและรีเซ็ตสถานะ
+              isProcessing = false; // ⭐ รีเซ็ตสถานะ
+              saveBtn.text(originalText).prop('disabled', false);
+            }
+          });
+        } else {
+          // เพิ่มพนักงานใหม่
+          $.ajax({
+            url: '/api/admin/employees',
+            type: 'POST',
+            data: JSON.stringify(employeeData),
+            contentType: 'application/json',
+            success: function(response) {
+              if (response.success) {
+                $('#employeeModal').modal('hide');
+                loadEmployees();
+                alert('เพิ่มพนักงานเรียบร้อย');
+              } else {
+                alert('เกิดข้อผิดพลาด: ' + response.message);
+              }
+            },
+            error: function(xhr, status, error) {
+              console.error('Error:', xhr, status, error);
+              alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+            },
+            complete: function() {
+              // คืนค่าปุ่มและรีเซ็ตสถานะ
+              isProcessing = false; // ⭐ รีเซ็ตสถานะ
+              saveBtn.text(originalText).prop('disabled', false);
+            }
+          });
+        }
+      }
+      
+      // ฟังก์ชันลบพนักงาน - เพิ่ม loading
+      function deleteEmployee(id) {
+        const confirmBtn = $('#confirmDeleteBtn');
+        const originalText = confirmBtn.text();
+        confirmBtn.text('กำลังลบ...').prop('disabled', true);
+        
+        $.ajax({
+          url: '/api/admin/employees/' + id,
+          type: 'DELETE',
+          success: function(response) {
+            if (response.success) {
+              $('#deleteModal').modal('hide');
+              loadEmployees();
+              alert('ลบพนักงานเรียบร้อย');
+            } else {
+              alert('เกิดข้อผิดพลาด: ' + response.message);
+            }
+          },
+          error: function() {
+            alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+          },
+          complete: function() {
+            // คืนค่าปุ่ม
+            confirmBtn.text(originalText).prop('disabled', false);
+          }
+        });
+      }
+      
+      // ฟังก์ชันล้างฟอร์ม
+      function resetForm() {
+        $('#employeeId').val('');
+        $('#empCode').val('');
+        $('#fullName').val('');
+        $('#position').val('');
+        $('#department').val('');
+        $('#status').val('active');
+        $('#modalTitle').text('เพิ่มพนักงาน');
+      }
+
+      // เมื่อคลิกปุ่มลบพนักงานทั้งหมด
+      $('#deleteAllBtn').on('click', function() {
+        // อัปเดตจำนวนพนักงานทั้งหมด
+        $('#totalEmployeeCount').text(employeesTable.data().length);
+        
+        // ล้างข้อความในช่องยืนยัน
+        $('#deleteConfirmText').val('');
+        $('#confirmDeleteAllBtn').prop('disabled', true);
+        
+        // แสดง Modal ยืนยันการลบทั้งหมด
+        const modal = new bootstrap.Modal(document.getElementById('deleteAllModal'));
+        modal.show();
+      });
+
+      // ตรวจสอบข้อความยืนยันการลบทั้งหมด
+      $('#deleteConfirmText').on('input', function() {
+        const confirmText = $(this).val();
+        $('#confirmDeleteAllBtn').prop('disabled', confirmText !== 'ยืนยันการลบ');
+      });
+
+      // เมื่อคลิกปุ่มยืนยันการลบทั้งหมด
+      $('#confirmDeleteAllBtn').on('click', function() {
+        if ($('#deleteConfirmText').val() === 'ยืนยันการลบ') {
+          deleteAllEmployees();
+        }
+      });
+
+      // ฟังก์ชันลบพนักงานทั้งหมด
+      function deleteAllEmployees() {
+        // แสดงข้อความกำลังประมวลผล
+        const confirmBtn = $('#confirmDeleteAllBtn');
+        const originalText = confirmBtn.text();
+        confirmBtn.text('กำลังลบข้อมูล...').prop('disabled', true);
+        
+        // สร้าง API สำหรับลบพนักงานทั้งหมด
+        $.ajax({
+          url: '/api/admin/delete-all-employees',
+          type: 'POST',
+          data: JSON.stringify({
+            confirm: true
+          }),
+          contentType: 'application/json',
+          success: function(response) {
+            // ซ่อน Modal
+            $('#deleteAllModal').modal('hide');
+            
+            if (response.success) {
+              // ล้างข้อมูลในตาราง
+              employeesTable.clear().draw();
+              alert(`ลบพนักงานทั้งหมดเรียบร้อยแล้ว จำนวน ${response.deleted_count} คน`);
+            } else {
+              alert('เกิดข้อผิดพลาด: ' + response.message);
+            }
+            
+            // คืนค่าปุ่มกลับ
+            confirmBtn.text(originalText).prop('disabled', false);
+          },
+          error: function(xhr, status, error) {
+            alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้: ' + error);
+            
+            // คืนค่าปุ่มกลับ
+            confirmBtn.text(originalText).prop('disabled', false);
+            
+            // ซ่อน Modal
+            $('#deleteAllModal').modal('hide');
+          }
+        });
+      }
+    });
+
+    // ตัวแปรสำหรับเก็บข้อมูลที่อ่านจากไฟล์
+    let importData = [];
+
+    // สร้างเทมเพลตสำหรับดาวน์โหลด
+    $('#downloadTemplateBtn').on('click', function(e) {
+      e.preventDefault();
+      
+      // สร้างข้อมูลสำหรับไฟล์เทมเพลต CSV
+      const templateData = [
+        ['emp_code', 'full_name', 'position', 'department'],
+        ['001', 'ตัวอย่าง สมชาย', 'เจ้าหน้าที่', 'ธุรการ'],
+        ['002', 'ตัวอย่าง สมหญิง', 'ผู้ช่วย', 'บัญชี'],
+      ];
+      
+      let csvContent = templateData.map(row => row.join(',')).join('\n');
+      
+      // สร้าง Blob จากข้อมูล CSV
+      const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      
+      // สร้าง element สำหรับดาวน์โหลด
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'employee_template.csv');
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    // ตรวจสอบข้อมูลเมื่อกดปุ่ม "ตรวจสอบข้อมูล"
+    $('#previewBtn').on('click', function() {
+      const fileInput = document.getElementById('fileImport');
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('กรุณาเลือกไฟล์ Excel หรือ CSV');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      const fileName = file.name.toLowerCase();
+      
+      // แสดงการโหลด
+      const progressBar = document.getElementById('uploadProgress');
+      progressBar.classList.remove('d-none');
+      document.querySelector('#uploadProgress .progress-bar').style.width = '20%';
+      document.querySelector('#uploadProgress .progress-bar').textContent = '20%';
+      
+      // ตรวจสอบประเภทไฟล์
+      if (fileName.endsWith('.csv')) {
+        // อ่านไฟล์ CSV
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          try {
+            const csvData = e.target.result;
+            
+            // ใช้ PapaParse สำหรับแปลงข้อมูล CSV
+            Papa.parse(csvData, {
+              header: true,
+              skipEmptyLines: true,
+              complete: function(results) {
+                // อัปเดตการโหลด
+                document.querySelector('#uploadProgress .progress-bar').style.width = '100%';
+                document.querySelector('#uploadProgress .progress-bar').textContent = '100%';
+                
+                // แปลงข้อมูลให้เป็นรูปแบบที่ถูกต้อง
+                processImportData(results.data);
+              },
+              error: function(error) {
+                console.error('Error parsing CSV:', error);
+                alert('เกิดข้อผิดพลาดในการอ่านไฟล์ CSV');
+                progressBar.classList.add('d-none');
+              }
+            });
+          } catch (error) {
+            console.error('Error reading CSV:', error);
+            alert('เกิดข้อผิดพลาดในการอ่านไฟล์');
+            progressBar.classList.add('d-none');
+          }
+        };
+        
+        reader.readAsText(file);
+      } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+        // อ่านไฟล์ Excel
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            
+            // อัปเดตการโหลด
+            document.querySelector('#uploadProgress .progress-bar').style.width = '60%';
+            document.querySelector('#uploadProgress .progress-bar').textContent = '60%';
+            
+            // ดึงข้อมูลจาก sheet แรก
+            const firstSheet = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheet];
+            
+            // แปลงข้อมูลเป็น JSON
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: false });
+            
+            // อัปเดตการโหลด
+            document.querySelector('#uploadProgress .progress-bar').style.width = '100%';
+            document.querySelector('#uploadProgress .progress-bar').textContent = '100%';
+            
+            // แปลงข้อมูลให้เป็นรูปแบบที่ถูกต้อง
+            processImportData(jsonData);
+          } catch (error) {
+            console.error('Error reading Excel:', error);
+            alert('เกิดข้อผิดพลาดในการอ่านไฟล์ Excel');
+            progressBar.classList.add('d-none');
+          }
+        };
+        
+        reader.readAsArrayBuffer(file);
+      } else {
+        alert('กรุณาอัปโหลดไฟล์ Excel (.xlsx, .xls) หรือ CSV (.csv) เท่านั้น');
+        progressBar.classList.add('d-none');
+        return;
+      }
+    });
+
+    // ประมวลผลข้อมูลที่อ่านได้จากไฟล์
+    function processImportData(data) {
+      importData = [];
+      let hasWarning = false;
+      
+      // แปลงข้อมูลเป็นรูปแบบมาตรฐาน
+      data.forEach(row => {
+        const empCode = row.emp_code || row.รหัสพนักงาน || row['รหัส'] || row['EMP CODE'] || '';
+        const fullName = row.full_name || row.ชื่อ || row['ชื่อ-นามสกุล'] || row['ชื่อนามสกุล'] || row.name || '';
+        const position = row.position || row.ตำแหน่ง || row['POSITION'] || '';
+        const department = row.department || row.แผนก || row['DEPARTMENT'] || '';
+        
+        // ข้ามแถวที่ไม่มีรหัสหรือชื่อพนักงาน
+        if (empCode.trim() && fullName.trim()) {
+          importData.push({
+            emp_code: empCode.trim(),
+            full_name: fullName.trim(),
+            position: position.trim(),
+            department: department.trim(),
+            status: 'active'
+          });
+        } else {
+          hasWarning = true;
+        }
+      });
+      
+      // แสดงตัวอย่างข้อมูล
+      showDataPreview(importData, hasWarning);
+    }
+
+    // แสดงตัวอย่างข้อมูลที่จะนำเข้า
+    function showDataPreview(data, hasWarning) {
+      const previewArea = document.getElementById('previewArea');
+      const previewBody = document.getElementById('previewBody');
+      const totalRecords = document.getElementById('totalRecords');
+      const previewWarning = document.getElementById('previewWarning');
+      const importBtn = document.getElementById('importBtn');
+      const progressBar = document.getElementById('uploadProgress');
+      
+      // ซ่อนการโหลด
+      progressBar.classList.add('d-none');
+      
+      // ล้างข้อมูลเดิม
+      previewBody.innerHTML = '';
+      
+      // ตรวจสอบว่ามีข้อมูลหรือไม่
+      if (data.length === 0) {
+        alert('ไม่พบข้อมูลที่จะนำเข้า โปรดตรวจสอบรูปแบบไฟล์');
+        return;
+      }
+      
+      // แสดงข้อมูลตัวอย่าง (10 แถวแรก)
+      const previewData = data.slice(0, 10);
+      
+      previewData.forEach(row => {
+        const tr = document.createElement('tr');
+        
+        tr.innerHTML = `
+          <td>${row.emp_code}</td>
+          <td>${row.full_name}</td>
+          <td>${row.position || '-'}</td>
+          <td>${row.department || '-'}</td>
+          <td>${row.status || 'active'}</td>
+        `;
+        
+        previewBody.appendChild(tr);
+      });
+      
+      // แสดงจำนวนรายการทั้งหมด
+      totalRecords.textContent = `พบข้อมูลทั้งหมด ${data.length} รายการ`;
+      
+      // แสดงคำเตือนถ้ามีข้อมูลที่ไม่สมบูรณ์
+      if (hasWarning) {
+        previewWarning.style.display = 'block';
+        previewWarning.textContent = 'คำเตือน: มีบางรายการที่ไม่มีรหัสพนักงานหรือชื่อพนักงาน ซึ่งจะถูกข้ามไป';
+      } else {
+        previewWarning.style.display = 'none';
+      }
+      
+      // แสดงพื้นที่แสดงตัวอย่างและปุ่มนำเข้า
+      previewArea.classList.remove('d-none');
+      importBtn.classList.remove('d-none');
+      
+      // ซ่อนส่วนแสดงผลการนำเข้า
+      document.getElementById('importResult').classList.add('d-none');
+      document.getElementById('importSuccess').style.display = 'none';
+      document.getElementById('importWarning').style.display = 'none';
+      document.getElementById('importError').style.display = 'none';
+    }
+
+    // การนำเข้าข้อมูล
+    $('#importBtn').on('click', async function() {
+      if (importData.length === 0) {
+        alert('ไม่มีข้อมูลที่จะนำเข้า');
+        return;
+      }
+      
+      // แสดงการโหลด
+      const progressBar = document.getElementById('uploadProgress');
+      progressBar.classList.remove('d-none');
+      
+      // ดึงค่าตัวเลือกการข้ามรายการซ้ำ
+      const skipExisting = document.getElementById('skipExistingCheck').checked;
+      
+      try {
+        // ส่งข้อมูลไปยัง API
+        const response = await fetch('/api/admin/import-employees', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            employees: importData,
+            skipExisting: skipExisting
+          })
+        });
+        
+        const result = await response.json();
+        
+        // แสดงผลการนำเข้า
+        showImportResult(result);
+        
+        // รีเฟรชหน้าเว็บ
+        if (result.success) {
+          setTimeout(function() {
+            window.location.reload(); // รีเฟรชหน้าเว็บ
+          }, 2000); // รอ 2 วินาทีเพื่อให้ผู้ใช้ได้เห็นผลลัพธ์
+        }
+
+      } catch (error) {
+        console.error('Error importing employees:', error);
+        alert('เกิดข้อผิดพลาดในการนำเข้าข้อมูล: ' + error.message);
+        progressBar.classList.add('d-none');
+      }
+    });
+
+    // แสดงผลการนำเข้า
+    function showImportResult(result) {
+      const progressBar = document.getElementById('uploadProgress');
+      progressBar.classList.add('d-none');
+      
+      const importResult = document.getElementById('importResult');
+      const importSuccess = document.getElementById('importSuccess');
+      const importWarning = document.getElementById('importWarning');
+      const importError = document.getElementById('importError');
+      const importSuccessCount = document.getElementById('importSuccessCount');
+      const importSkippedCount = document.getElementById('importSkippedCount');
+      const importErrorCount = document.getElementById('importErrorCount');
+      const importErrorList = document.getElementById('importErrorList');
+      
+      // แสดงส่วนผลลัพธ์
+      importResult.classList.remove('d-none');
+      
+      if (result.success) {
+        // แสดงจำนวนที่นำเข้าสำเร็จ
+        if (result.imported > 0) {
+          importSuccess.style.display = 'block';
+          importSuccessCount.textContent = result.imported;
+        } else {
+          importSuccess.style.display = 'none';
+        }
+        
+        // แสดงจำนวนที่ข้ามไป
+        if (result.skipped > 0) {
+          importWarning.style.display = 'block';
+          importSkippedCount.textContent = result.skipped;
+        } else {
+          importWarning.style.display = 'none';
+        }
+        
+        // แสดงรายการที่มีข้อผิดพลาด
+        if (result.errors && result.errors.length > 0) {
+          importError.style.display = 'block';
+          importErrorCount.textContent = result.errors.length;
+          
+          importErrorList.innerHTML = '';
+          result.errors.forEach(error => {
+            const li = document.createElement('li');
+            li.textContent = `รหัส ${error.emp_code}, ชื่อ ${error.full_name}: ${
+            error.error}`;
+            importErrorList.appendChild(li);
+          });
+        } else {
+          importError.style.display = 'none';
+        }
+      } else {
+        // กรณีเกิดข้อผิดพลาดทั้งหมด
+        importSuccess.style.display = 'none';
+        importWarning.style.display = 'none';
+        importError.style.display = 'block';
+        importErrorCount.textContent = '1';
+        
+        importErrorList.innerHTML = '';
+        const li = document.createElement('li');
+        li.textContent = result.message || 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
+        importErrorList.appendChild(li);
+      }
+    }
+  </script>
+</body>
+</html>
